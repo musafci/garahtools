@@ -1,0 +1,20 @@
+[21-Jul-2022 00:04:58 UTC] PHP Fatal error:  Uncaught Error: Class 'WP_Widget' not found in /home/garahtoo/public_html/wp-includes/widgets/class-wp-widget-block.php:17
+Stack trace:
+#0 {main}
+  thrown in /home/garahtoo/public_html/wp-includes/widgets/class-wp-widget-block.php on line 17
+[23-Jul-2022 19:57:58 UTC] PHP Fatal error:  Uncaught Error: Class 'WP_Widget' not found in /home/garahtoo/public_html/wp-includes/widgets/class-wp-widget-block.php:17
+Stack trace:
+#0 {main}
+  thrown in /home/garahtoo/public_html/wp-includes/widgets/class-wp-widget-block.php on line 17
+[24-Jul-2022 21:40:24 UTC] PHP Fatal error:  Uncaught Error: Class 'WP_Widget' not found in /home/garahtoo/public_html/wp-includes/widgets/class-wp-widget-block.php:17
+Stack trace:
+#0 {main}
+  thrown in /home/garahtoo/public_html/wp-includes/widgets/class-wp-widget-block.php on line 17
+[25-Jul-2022 15:00:57 UTC] PHP Fatal error:  Uncaught Error: Class 'WP_Widget' not found in /home/garahtoo/public_html/wp-includes/widgets/class-wp-widget-block.php:17
+Stack trace:
+#0 {main}
+  thrown in /home/garahtoo/public_html/wp-includes/widgets/class-wp-widget-block.php on line 17
+[26-Jul-2022 09:30:11 UTC] PHP Fatal error:  Uncaught Error: Class 'WP_Widget' not found in /home/garahtoo/public_html/wp-includes/widgets/class-wp-widget-block.php:17
+Stack trace:
+#0 {main}
+  thrown in /home/garahtoo/public_html/wp-includes/widgets/class-wp-widget-block.php on line 17

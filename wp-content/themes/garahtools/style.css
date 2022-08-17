@@ -1,0 +1,93 @@
+/*
+Theme Name: Garah Tools
+Theme URI:
+Author: Md Abu Musa
+Author URI: https://ehalum.com
+Description: Garahtools by eHalum
+Version: 1.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Tags: e-commerce
+Text Domain: garahtools
+*/
+
+.woocommerce ul.products li.product h3 {
+  font-size: 25px !important;
+  padding: 0px;
+  line-height: 0px;
+  margin: 0px;
+}
+
+.woocommerce ul.products li.product h2 {
+  font-size: 25px !important;
+  padding: 0px;
+  line-height: 0px;
+  margin: 0px;
+}
+
+.p-a20 {
+  padding-bottom: 0px;
+}
+
+.woocommerce ul.products li.product a img {
+  margin: 0px;
+}
+
+.woocommerce .woocommerce-ordering select {
+  background-color: #f8f8f8;
+}
+
+
+/* WC Product Search */
+#search-toggle-block {
+  padding: 10px;
+}
+.wc-block-product-search__label {
+  display: none;
+}
+
+
+/* Remove spinner on WooCommerce checkout page */
+/* .woocommerce .blockUI.blockOverlay {
+	position: relative! important;
+	display: none! important;
+  }
+  #preloader{display:none !important;} */
+
+
+.pswp__ui .pswp__preloader {display: none !important;}
+
+
+
+
+/* Woo Search */
+
+.widget_product_search {
+  overflow: auto;
+}
+
+.widget_product_search #searchform {
+  float: left;
+}
+
+.widget_product_search input[type="text"],
+.widget_product_search button[type="submit"] {
+  border-radius: 0;
+  padding: 6px;
+}
+.widget_product_search input[type="text"] {
+  width: 200px;
+  float: right;
+  padding: 6px;
+}
+
+.widget_product_search button[type="submit"] {
+  float: right;
+}
+
+.widget_product_search button[type="submit"]:hover,
+.widget_product_search button[type="submit"]:focus {
+  background: #f9ba00;
+  border: #fff 1px solid;
+  color: #000;
+}

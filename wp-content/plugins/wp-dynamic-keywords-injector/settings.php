@@ -1,4 +1,22 @@
 <style type="text/css">
+    
+/*Style for sidebar*/
+div#srx_wpdki_plug_sidebar {
+    width: 330px;
+    padding-left: 20px;
+    float: right;
+}
+div#srx_wpdki_plug_sidebar h1 {
+    font-weight: normal;
+    border-bottom: 1px solid #336799;
+    padding-bottom: 10px;
+    margin: 0;
+    color: #336799;
+    font-size: 18px;
+    margin-top: 6px;
+}
+/*Style for sidebar end*/
+
 .srx-wpdki-container {width: 100%;max-width: 1300px;}
 .srx-wpdki-set td,th{padding: 0.5em;}
 .srxheading{margin-bottom: 13px !important;padding: 7px;border-left: 5px solid #00a0d2;}
@@ -23,116 +41,121 @@ input:checked + .slider .off{display: none;}
 <div class="srx-wpdki-container">
     <h1>WP Dynamic Keyword Injector</h1>
     <hr>
-    <form class="srx-wpdki-set" method="POST">
-        <h3 class="srxheading">Settings</h3>
-        <table>
-            <tbody>
-                <tr>
-                    <td>
-                        <label for="srx-canonical-check">
-                            Update Canonical Links
-                        </label>
-                        <small>"ON" this option to control Canonical Links.</small>
-                    </td>
-                    <td>
-                        <label class="switch">
-                            <input type="checkbox" id="srx-canonical-check" name="srx_canonical_check"      
-                            <?php if(get_option("srx_canonical_check") == 1){echo 'checked';} ?>
-                            >
-                            <div class="slider round">
-                                <span class="on">ON</span>
-                                <span class="off">OFF</span>
-                            </div>
-                        </label>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label for="srx-internal-check">Update Internal Links</label>
-                        <small>"ON" this option to control internal Links in all over page.</small>
-                    </td>
-                    <td>
-                        <label class="switch">
-                            <input type="checkbox" id="srx-internal-check" name="srx_internal_check"    <?php if(get_option( "srx_internal_check") == 1){echo 'checked';}?>
-                            >
-                            <div class="slider round">
-                                <span class="on">ON</span>
-                                <span class="off">OFF</span>
-                            </div>
-                        </label>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label for="srx-metaval-check">Update Meta Tag Values</label>
-                        <small>"ON" this option to control meta Description and other meta values.</small>
-                    </td>
-                    <td>
-                        <label class="switch">
-                            <input type="checkbox" id="srx-metaval-check" name="srx_metaval_check"  <?php if(get_option("srx_metaval_check") == 1) {echo 'checked';} ?>
-                            >
-                            <div class="slider round">
-                                <span class="on">ON</span>
-                                <span class="off">OFF</span>
-                            </div>
-                        </label>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label for="srx-metatitle-check">Update Title</label>
-                        <small>"ON" this option to Override SEO plugin's or default page title by adding "?title=" perameter in Url.</small>
-                    </td>
-                    <td>    
-                        <label class="switch">
-                            <input type="checkbox" id="srx-metatitle-check" name="srx-metatitle-check" 
-                                <?php if(get_option("srx-metatitle-check") == 1){echo 'checked';}?>
-                            >
-                            <div class="slider round">
-                                <span class="on">ON</span>
-                                <span class="off">OFF</span>
-                            </div>
-                        </label>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label for="srx-whitelist-kwd">Enable Whitelist Keywords:</label>
-                        <small>"ON" this option to control Replace Keywords in Title and Page Title. </small>
-                    </td>
-                    <td>    
-                        <label class="switch">
-                            <input type="checkbox" id="srx-whitelist-kwd" name="srx-whitelist-kwd"  
-                                <?php if(get_option("srx-whitelist-kwd") == 1){echo 'checked';}?>
-                            >
-                            <div class="slider round">
-                                <span class="on">ON</span>
-                                <span class="off">OFF</span>
-                            </div>
-                        </label>
-                    </td>
-                </tr>
-                <?php
-                    if ( get_option("srx-whitelist-kwd") == 1 ) {
-                ?> 
-                        <tr>
-                            <td>
-                                <label for="srx-whitelist-kwd-box">Write Whitelist Keywords:</label>
-                            </td>
-                            <td>    
-                                <textarea rows="4" cols="50" name="srx-whitelist-kwd-box"><?php echo get_option("srx-whitelist-kwd-box") ?></textarea>
-                                <?php if (get_option("srx-whitelist-kwd-box") == '') { ?>
-                                    <p style="color:red;margin:0;font-size:12px;">Please write comma separated Title & Page Title keywords!</p>
-                                <?php } ?>
-                            </td>
-                        </tr>
-                <?php 
-                    }
-                ?>
-                <tr><td><button type="submit" name="srx_wpdki_upsettings" class="button button-primary">Update Settings</button></td></tr>
-            </tbody>
-        </table>
-    </form>
+    <div class="srx-wpdki-sidebar-content" id="srx_wpdki_plug_sidebar">
+        <?php include( plugin_dir_path( __FILE__ ) . '/sidebar.php' ); ?>
+    </div>
+    <div>
+        <form class="srx-wpdki-set" method="POST">
+            <h3 class="srxheading">Settings</h3>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <label for="srx-canonical-check">
+                                Update Canonical Links
+                            </label>
+                            <small>"ON" this option to control Canonical Links.</small>
+                        </td>
+                        <td>
+                            <label class="switch">
+                                <input type="checkbox" id="srx-canonical-check" name="srx_canonical_check"      
+                                <?php if(get_option("srx_canonical_check") == 1){echo 'checked';} ?>
+                                >
+                                <div class="slider round">
+                                    <span class="on">ON</span>
+                                    <span class="off">OFF</span>
+                                </div>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="srx-internal-check">Update Internal Links</label>
+                            <small>"ON" this option to control internal Links in all over page.</small>
+                        </td>
+                        <td>
+                            <label class="switch">
+                                <input type="checkbox" id="srx-internal-check" name="srx_internal_check"    <?php if(get_option( "srx_internal_check") == 1){echo 'checked';}?>
+                                >
+                                <div class="slider round">
+                                    <span class="on">ON</span>
+                                    <span class="off">OFF</span>
+                                </div>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="srx-metaval-check">Update Meta Tag Values</label>
+                            <small>"ON" this option to control meta Description and other meta values.</small>
+                        </td>
+                        <td>
+                            <label class="switch">
+                                <input type="checkbox" id="srx-metaval-check" name="srx_metaval_check"  <?php if(get_option("srx_metaval_check") == 1) {echo 'checked';} ?>
+                                >
+                                <div class="slider round">
+                                    <span class="on">ON</span>
+                                    <span class="off">OFF</span>
+                                </div>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="srx-metatitle-check">Update Title</label>
+                            <small>"ON" this option to Override SEO plugin's or default page title by adding "?title=" perameter in Url.</small>
+                        </td>
+                        <td>    
+                            <label class="switch">
+                                <input type="checkbox" id="srx-metatitle-check" name="srx-metatitle-check" 
+                                    <?php if(get_option("srx-metatitle-check") == 1){echo 'checked';}?>
+                                >
+                                <div class="slider round">
+                                    <span class="on">ON</span>
+                                    <span class="off">OFF</span>
+                                </div>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="srx-whitelist-kwd">Enable Whitelist Keywords:</label>
+                            <small>"ON" this option to control Replace Keywords in Title and Page Title. </small>
+                        </td>
+                        <td>    
+                            <label class="switch">
+                                <input type="checkbox" id="srx-whitelist-kwd" name="srx-whitelist-kwd"  
+                                    <?php if(get_option("srx-whitelist-kwd") == 1){echo 'checked';}?>
+                                >
+                                <div class="slider round">
+                                    <span class="on">ON</span>
+                                    <span class="off">OFF</span>
+                                </div>
+                            </label>
+                        </td>
+                    </tr>
+                    <?php
+                        if ( get_option("srx-whitelist-kwd") == 1 ) {
+                    ?> 
+                            <tr>
+                                <td>
+                                    <label for="srx-whitelist-kwd-box">Write Whitelist Keywords:</label>
+                                </td>
+                                <td>    
+                                    <textarea rows="4" cols="50" name="srx-whitelist-kwd-box"><?php echo get_option("srx-whitelist-kwd-box") ?></textarea>
+                                    <?php if (get_option("srx-whitelist-kwd-box") == '') { ?>
+                                        <p style="color:red;margin:0;font-size:12px;">Please write comma separated Title & Page Title keywords!</p>
+                                    <?php } ?>
+                                </td>
+                            </tr>
+                    <?php 
+                        }
+                    ?>
+                    <tr><td><button type="submit" name="srx_wpdki_upsettings" class="button button-primary">Update Settings</button></td></tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
     <br>
     <div class="srx-plugin-content">
         <h3 class="srxheading">Usage</h3>

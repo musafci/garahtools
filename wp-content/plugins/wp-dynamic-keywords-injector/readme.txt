@@ -1,10 +1,10 @@
-﻿=== WP Dynamic Keywords Injector ===
+=== WP Dynamic Keywords Injector ===
 Contributors: mughees.hafeez
 Donate link: https://www.seerox.com/
 Tags: dynamic, keywords, injector, insertion, title, page title, title tags, seo, ads, adwords, spintax, landing page
 Requires at least: 3.8
-Tested up to: 5.7.1
-Stable tag: 2.3.5
+Tested up to: 6.0
+Stable tag: 2.3.15
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -13,6 +13,8 @@ WP Dynamic Keywords Injector inserts dynamic keywords, spintax, page title and t
 == Description ==
 
 WP Dynamic Keywords Injector inserts the keyword from browser's address bar, if not given in URL then the spintax will be placed and if both not found then the default keyword will be placed. Also this plugin will change the title tag and page title if they are given in browser’s address bar.
+
+[youtube https://www.youtube.com/watch?v=4DMTdlvIisY]
 
 This will allow users to insert dynamic keywords not only in page title, page content but also in meta title for the landing pages. Used to be promoted on adwards. 
 This functionality has been implemented through shortcode given below is a sample shortcode.
@@ -41,8 +43,36 @@ http://example.tld/sample-page/?search_keyword=Search+Keyword
 This keyword can be use in title, page_title and in default value of dyn_keyword shortcode like.
 http://example.tld/sample-page/?title=Its+SEARCH_KEYWORD+title&page_title=SEARCH_KEYWORD+Heading&search_keyword=Search+Keyword
 
-
 [seerox_wpdki_dyn_keywords default=&#34;This SEARCH_KEYWORD is Draft.&#34;]
+
+<div style="text-align:center"><strong><a href="https://tastewp.com/new?pre-installed-plugin-slug=wp-dynamic-keywords-injector&redirect=admin.php%3Fpage%3Dseerox_wpdki_settings&ni=true">Click here</a></strong> to play with it</div>
+
+<h4>PRO</h4>
+
+WP Dynamic Keywords Injector plugin is also available in a professional version which includes more functionality, and more flexibility!
+
+<ul>
+<li>Unlimited Landing Pages</li>
+<li>Unlimited Multiple Sub Keywords</li>
+<li>Interface to Manage Keywords</li>
+<li>Perfect Quality Scores</li>
+<li>Dynamic Images</li>
+<li>Dynamic Videos</li>
+<li>Dynamic Spintax</li>
+<li>Keyword Groups</li>
+<li>HTML enabled Keyword Fields</li>
+<li>IFrame Support</li>
+<li>WP Shortcodes Support</li>
+<li>Generate Dynamic Links</li>
+<li>Download all possible Links</li>
+<li>Import and Export Keywords</li>
+<li>Relevant Posts Links list ShortCode</li>
+<li>Relevant Random Post Link ShortCode</li>
+</ul>
+
+<a href="https://wpdki.com/">Upgrade to Pro</a>
+
+
 
 == Installation ==
 
@@ -89,6 +119,33 @@ If you get stuck, you can ask for help in the WP Dynamic Keywords Injector Plugi
 5. screenshot-5.gif
 
 == Changelog ==
+
+2.3.14
+
+* Rank Math SEO “title not updating” Issue resolved and made compatible with latest version.
+
+2.3.11
+
+* Compatibility checked with wordpress 6.0
+
+
+2.3.9
+
+* Canonical links issue resolved
+* Internal linking issue resolved
+
+
+2.3.8
+
+Shortcode compatibility with:
+
+* Rank Math SEO
+
+2.3.7
+
+Update Internal Links compatibility with:
+
+* Elementor
 
 2.3.3
 

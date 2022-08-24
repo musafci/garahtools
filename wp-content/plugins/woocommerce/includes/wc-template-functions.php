@@ -789,7 +789,7 @@ function wc_query_string_form_fields( $values = null, $exclude = array(), $curre
 }
 
 /**
- * Get the terms and conditons page ID.
+ * Get the terms and conditions page ID.
  *
  * @since 3.4.0
  * @return int
@@ -823,7 +823,7 @@ function wc_terms_and_conditions_checkbox_enabled() {
 }
 
 /**
- * Get the terms and conditons checkbox text, if set.
+ * Get the terms and conditions checkbox text, if set.
  *
  * @since 3.4.0
  * @return string
@@ -1231,7 +1231,6 @@ if ( ! function_exists( 'woocommerce_template_loop_category_link_close' ) ) {
 }
 
 if ( ! function_exists( 'woocommerce_taxonomy_archive_description' ) ) {
-
 	/**
 	 * Show an archive description on taxonomy archives.
 	 */
@@ -1239,12 +1238,25 @@ if ( ! function_exists( 'woocommerce_taxonomy_archive_description' ) ) {
 		if ( is_product_taxonomy() && 0 === absint( get_query_var( 'paged' ) ) ) {
 			$term = get_queried_object();
 
-			if ( $term && ! empty( $term->description ) ) {
-				echo '<div class="term-description">' . wc_format_content( wp_kses_post( $term->description ) ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			if ( $term ) {
+				/**
+				 * Filters the archive's raw description on taxonomy archives.
+				 *
+				 * @since 6.7.0
+				 *
+				 * @param string  $term_description Raw description text.
+				 * @param WP_Term $term             Term object for this taxonomy archive.
+				 */
+				$term_description = apply_filters( 'woocommerce_taxonomy_archive_description_raw', $term->description, $term );
+
+				if ( ! empty( $term_description ) ) {
+					echo '<div class="term-description">' . wc_format_content( wp_kses_post( $term_description ) ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				}
 			}
 		}
 	}
 }
+
 if ( ! function_exists( 'woocommerce_product_archive_description' ) ) {
 
 	/**
@@ -1402,16 +1414,24 @@ if ( ! function_exists( 'woocommerce_get_product_thumbnail' ) ) {
 	 * Get the product thumbnail, or the placeholder if not set.
 	 *
 	 * @param string $size (default: 'woocommerce_thumbnail').
-	 * @param int    $deprecated1 Deprecated since WooCommerce 2.0 (default: 0).
-	 * @param int    $deprecated2 Deprecated since WooCommerce 2.0 (default: 0).
+	 * @param  array $attr Image attributes.
+	 * @param  bool  $placeholder True to return $placeholder if no image is found, or false to return an empty string.
 	 * @return string
 	 */
-	function woocommerce_get_product_thumbnail( $size = 'woocommerce_thumbnail', $deprecated1 = 0, $deprecated2 = 0 ) {
+	function woocommerce_get_product_thumbnail( $size = 'woocommerce_thumbnail', $attr = array(), $placeholder = true ) {
 		global $product;
+
+		if ( ! is_array( $attr ) ) {
+			$attr = array();
+		}
+
+		if ( ! is_bool( $placeholder ) ) {
+			$placeholder = true;
+		}
 
 		$image_size = apply_filters( 'single_product_archive_thumbnail_size', $size );
 
-		return $product ? $product->get_image( $image_size ) : '';
+		return $product ? $product->get_image( $image_size, $attr, $placeholder ) : '';
 	}
 }
 
@@ -1773,6 +1793,9 @@ if ( ! function_exists( 'woocommerce_quantity_input' ) ) {
 			'inputmode'    => apply_filters( 'woocommerce_quantity_input_inputmode', has_filter( 'woocommerce_stock_amount', 'intval' ) ? 'numeric' : '' ),
 			'product_name' => $product ? $product->get_title() : '',
 			'placeholder'  => apply_filters( 'woocommerce_quantity_input_placeholder', '', $product ),
+			// When autocomplete is enabled in firefox, it will overwrite actual value with what user entered last. So we default to off.
+			// See @link https://github.com/woocommerce/woocommerce/issues/30733.
+			'autocomplete' => apply_filters( 'woocommerce_quantity_input_autocomplete', 'off', $product ),
 		);
 
 		$args = apply_filters( 'woocommerce_quantity_input_args', wp_parse_args( $args, $defaults ), $product );
@@ -2267,9 +2290,9 @@ if ( ! function_exists( 'woocommerce_breadcrumb' ) ) {
 			apply_filters(
 				'woocommerce_breadcrumb_defaults',
 				array(
-					'delimiter'   => '&nbsp;&#187;&nbsp;',
-					'wrap_before' => '<li>',
-					'wrap_after'  => '</li>',
+					'delimiter'   => '&nbsp;&#47;&nbsp;',
+					'wrap_before' => '<nav class="woocommerce-breadcrumb">',
+					'wrap_after'  => '</nav>',
 					'before'      => '',
 					'after'       => '',
 					'home'        => _x( 'Home', 'breadcrumb', 'woocommerce' ),
@@ -2736,6 +2759,10 @@ if ( ! function_exists( 'woocommerce_form_field' ) ) {
 
 		$args = wp_parse_args( $args, $defaults );
 		$args = apply_filters( 'woocommerce_form_field_args', $args, $key, $value );
+
+		if ( is_string( $args['class'] ) ) {
+			$args['class'] = array( $args['class'] );
+		}
 
 		if ( $args['required'] ) {
 			$args['class'][] = 'validate-required';
@@ -3333,7 +3360,7 @@ if ( ! function_exists( 'wc_display_item_meta' ) ) {
 			)
 		);
 
-		foreach ( $item->get_formatted_meta_data() as $meta_id => $meta ) {
+		foreach ( $item->get_all_formatted_meta_data() as $meta_id => $meta ) {
 			$value     = $args['autop'] ? wp_kses_post( $meta->display_value ) : wp_kses_post( make_clickable( trim( $meta->display_value ) ) );
 			$strings[] = $args['label_before'] . wp_kses_post( $meta->display_key ) . $args['label_after'] . $value;
 		}

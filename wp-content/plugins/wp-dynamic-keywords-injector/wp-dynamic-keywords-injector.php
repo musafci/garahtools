@@ -3,11 +3,11 @@
  * Plugin Name: WP Dynamic Keywords Injector
  * Plugin URI: https://wordpress.org/plugins/wp-dynamic-keywords-injector/
  * Description: WP Dynamic Keywords Injector inserts dynamic keywords, spintax, page title and meta title.
- * Version: 2.3.5
+ * Version: 2.3.15
  * Author: Seerox
  * Author URI: https://www.seerox.com
  * Requires at least: 3.8
- * Tested up to: 5.7.1
+ * Tested up to: 6.0
  */
 
 /**
@@ -15,6 +15,24 @@
  * @param   array   $atts
  * @return  string  $keyword
  */
+add_action( 'admin_print_styles', 'srx_sidebar_popup_scripts' );
+    function srx_sidebar_popup_scripts() {
+            $plugin_url = plugin_dir_url( __FILE__ );
+        if (isset($_GET['page']) && ($_GET['page'] == 'seerox_wpdki_settings')) {
+            wp_enqueue_script('magnific-popup-js', $plugin_url.'js/jquery.magnific-popup.min.js');
+            wp_enqueue_style('magnific-popup-css', $plugin_url.'css/magnific-popup.min.css');
+            wp_enqueue_style('magnific-popup-font-css', 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'); 
+        }
+    }
+
+add_action('wp_ajax_srx_add_popup_option', 'srx_add_popup_option_fun');
+add_action('wp_ajax_nopriv_srx_add_popup_option', 'srx_add_popup_option_fun');
+function srx_add_popup_option_fun(){
+    add_option( 'srx_popup_open', true );
+    return 'success';
+    exit();
+}
+     
 function seerox_wpdki_insert_dynamic_keywords( $atts = array() ) {
     // Variables initialization
     $default         = '';
@@ -168,49 +186,73 @@ if(get_option( 'srx-metatitle-check' ) == 1)
     add_filter('pre_get_document_title', 'seerox_wpdki_change_the_title', 1);
 }
 
+
 /**
  * Update body content links.
  * @return string $current
  */
 if(get_option( 'srx_internal_check' ) == 1)
 {
-    add_filter ('the_content', 'seerox_wpdki_update_body_link') ;
+    add_filter ('the_content', 'seerox_wpdki_update_body_link', 10, 1) ;
 }
 function seerox_wpdki_update_body_link($content)
 {
     if(isset($_GET['dyn_keyword']) || isset($_GET['title']) || isset($_GET['page_title'])){
-        global $post;
-        $content = $post->post_content;
-        preg_match_all('/<a href="(.*)">/',$content,$a);
-        $count = count($a[1]);
 
+        global $post;
+        if (!function_exists('is_plugin_active')) {
+            include_once(ABSPATH . 'wp-admin/includes/plugin.php');
+        }
+        if (is_plugin_active( 'elementor/elementor.php' ) && \Elementor\Plugin::$instance->db->is_built_with_elementor($post->ID)) {
+                $content = apply_filters( 'elementor/frontend/the_content', $content );
+        } else {
+            $content = $post->post_content;
+        }
+
+        $regexhttp = '/http?\:\/\/[^\" ]+/i';
+        preg_match_all($regexhttp, $content, $httpmatches);
+        $regexhttps = '/https?\:\/\/[^\" ]+/i';
+        preg_match_all($regexhttps, $content, $httpsmatches);
+        $a = array_merge($httpmatches,$httpsmatches);
+        $a_links = $a[1];
+        $count = count($a_links);
+        // echo "<br>sscontent<br>";
+        // print_r($content);
         for ($row = 0; $row < $count ; $row++) {
-            $link = $a[1]["$row"];
+            $link = $a_links[$row];
+
             if(strpos($link,home_url()) !== false || preg_match('/^(\/.*)$/', $link))
             {
 
                 //----- Already query found in URL
                 //---- Parsed and append on dynamic url
-                $qs = parse_url($link,PHP_URL_QUERY);
+                $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+                $qs = parse_url($actual_link,PHP_URL_QUERY);
                 $preq='';$oldq=array('/?');
                 parse_str($qs, $vars);
+                
                 foreach ($vars as $key => $value) {
                     if(strlen($key)>0)
                     {
-                         $preq .= '&'.$key.'='.$value;
-                         array_push($oldq, $key.'='.$value);
+                        $preq .= '&'.$key.'='.$value;
+                        array_push($oldq, $key.'='.$value);
                     }
                 }
+
                 //-- change only home url
                 if($link == home_url('/'))
                 {
-                    $content = str_replace('"'.$link.'"','"'.$link.'?'.$_SERVER['QUERY_STRING'].$preq.'"',$content);
+                    $content = str_replace('"'.$link.'"','"'.$link.'?'.$_SERVER['QUERY_STRING'].'"',$content);
                 }else{
-                    $content = str_replace('"'.$link.'"','"'.str_replace($oldq,'', $link).'/?'.$_SERVER['QUERY_STRING'].$preq.'"',$content);
+                    
+                    $content = str_replace('"'.$link.'"','"'.$link.'?'.$_SERVER['QUERY_STRING'].'"',$content);
+                    // $content = str_replace('"'.$link.'"','"'.str_replace($oldq,'', $link).'?'.$_SERVER['QUERY_STRING'].'"',$content);
+                    // $content = str_replace('"'.$link.'"','"'.str_replace($oldq,'', $link).'/?'.$_SERVER['QUERY_STRING'].$preq.'"',$content);
                 }
             }
         }
     }
+    
     return $content;
 }
 
@@ -224,10 +266,13 @@ $filters = array (
     'attachment_link', // when post_type == 'attachment'
     'post_type_link',  // when post_type is not one of the above
     ) ;
-if(get_option( 'srx_internal_check' ) == 1 && isset($_GET['dyn_keyword']) || isset($_GET['title']) || isset($_GET['page_title']))
+
+if(get_option( 'srx_internal_check' ) == 1)
 {
-    foreach ($filters as $filter) {
-        add_filter ($filter, 'seerox_wpdki_add_query_args') ;
+    if(isset($_GET['dyn_keyword']) || isset($_GET['title']) || isset($_GET['page_title'])){
+        foreach ($filters as $filter) {
+            add_filter ($filter, 'seerox_wpdki_add_query_args') ;
+        }
     }
 }
 
@@ -244,6 +289,7 @@ function seerox_wpdki_add_query_args($permalink)
     }
     
 }
+
 
 
 /**
@@ -265,12 +311,13 @@ if(get_option( 'srx_metaval_check' ) == 1)
     }  
 }
 
-
 /**
- * Enable WPDKI Shortcode in Yoast Title
+ * Enable WPDKI Shortcode in Yoast Title, All in one SEO Title and Rank Math SEO Title
  * @return $title
  */
+add_filter( 'aioseop_title', 'seerox_wpdki_enable_title_shortcode', 1 );
 add_filter('wpseo_title', 'seerox_wpdki_enable_title_shortcode');
+add_filter('rank_math/frontend/title', 'seerox_wpdki_enable_title_shortcode');
 function seerox_wpdki_enable_title_shortcode($title) {
     $title = do_shortcode($title); 
     $wpdki_ptitle = !empty( $_GET["title"] ) ? sanitize_text_field( $_GET["title"] ) : false;
@@ -282,59 +329,58 @@ function seerox_wpdki_enable_title_shortcode($title) {
   return $title;
 }
 
-
-/**
- * Enable WPDKI Shortcode in All in One SEO Title
- * @return $title
- */
-add_filter( 'aioseop_title', 'seerox_wpdki_aioseop_enable_title_shortcode', 1 );
-function seerox_wpdki_aioseop_enable_title_shortcode( $title ){
-
-    $title = do_shortcode($title); 
-    $wpdki_ptitle = !empty( $_GET["title"] ) ? sanitize_text_field( $_GET["title"] ) : false;
-    $search_keyword = isset( $_GET["search_keyword"] ) ? $_GET["search_keyword"] : false;
-    if ($wpdki_ptitle && get_option( 'srx-metatitle-check' ) == 1) {
-        $rplc_title = str_replace('SEARCH_KEYWORD',  $search_keyword , $wpdki_ptitle);
-        $title = $rplc_title;
-    }
-    return $title;
-
-}
-
-
 /**
  * Enable WPDKI Shortcode in All in One SEO Description
- * @return $descr
+ * @return $description
  */
-add_filter ('aioseop_description', 'seerox_wpdki_aioseop_enable_desc_shortcode', 1);
-function seerox_wpdki_aioseop_enable_desc_shortcode ($descr)
-{
-    $descr= do_shortcode($descr);
-    return $descr;
+add_filter( 'aioseo_description', 'srx_aioseo_filter_description');
+function srx_aioseo_filter_description( $description ) {
+
+    $description = do_shortcode($description);
+    return $description;
 }
 
+/**
+ * Enable WPDKI Shortcode in Math Rank SEO Description
+ * @return $description
+ */
+add_filter(
+    'rank_math/frontend/description',
+    function ( $description ) {
+
+        $description = do_shortcode($description);
+        return $description;
+
+    }, 10, 2);
 
 /**
  * register Canonical Url
  * @return  string  $keyword
  */
-remove_action ( 'wp_head' , 'rel_canonical' , 48) ;
-add_filter( 'wpseo_canonical', '__return_false' );
+
 add_action ( 'wp_head' , 'seerox_wpdki_rel_canonical' ) ;
 
 function seerox_wpdki_rel_canonical () {
+
+    
     if(get_option( 'srx_canonical_check' ) == 1)
     {
+        remove_action ( 'wp_head' , 'rel_canonical' , 48) ;
+        add_filter( 'wpseo_canonical', '__return_false' );
         $appn = '';
         ob_start () ;
         rel_canonical () ;
         $rel_content = ob_get_contents () ;
         ob_end_clean () ;
-        if(isset($_SERVER['QUERY_STRING']) && isset($_GET['dyn_keyword']) || isset($_GET['title']) || isset($_GET['page_title']))
+        if(isset($_SERVER['QUERY_STRING']))
         {
-            $appn = '?'.$_SERVER['QUERY_STRING'];
+            if (isset($_GET['dyn_keyword']) || isset($_GET['title']) || isset($_GET['page_title'])) {
+                $appn = '?'.$_SERVER['QUERY_STRING'];
+            }
         }
-        echo str_replace ( get_page_link() , get_page_link().$appn , $rel_content ) ;
+
+        $url_parts = explode('?', get_page_link(),2);
+        echo str_replace ( get_page_link() , $url_parts[0].$appn, $rel_content ) ;
     }
     
 }
@@ -406,4 +452,67 @@ function seerox_wpdki_settings_content ()
     }
     include_once( "settings.php" );
 }
-    
+
+function srx_wpdki_curl_function($data,$url){
+    $send_data = $data;
+    $string = http_build_query($send_data);
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $string);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    $response = curl_exec($ch);
+    curl_close($ch);
+    return  $response;
+}
+
+add_action('admin_footer', 'srx_wpdki_ft_areq_js');
+function srx_wpdki_ft_areq_js(){
+    ?>
+        <script type="text/javascript">
+            jQuery(document).ready(function(){
+                jQuery("#srx_wpdki_trial_form").submit(function(e){
+                    e.preventDefault();
+                    var ajaxurl = "<?php echo admin_url('admin-ajax.php');?>";
+                    jQuery(".srx-wpdki-trial-form").css('opacity','0.5');
+
+                    var wpdki_trial_f_name = jQuery(".wpdki_trial_f_name").val();
+                    var wpdki_trial_l_name = jQuery(".wpdki_trial_l_name").val();
+                    var wpdki_trial_email = jQuery(".wpdki_trial_email").val();
+                    var wpdki_trial_website = jQuery(".wpdki_trial_website").val();
+
+                    var data = {
+                        'action' : 'srx_wpdki_ft_req',
+                        'wpdki_trial_f_name' : wpdki_trial_f_name,
+                        'wpdki_trial_l_name' : wpdki_trial_l_name,
+                        'wpdki_trial_email' : wpdki_trial_email,
+                        'wpdki_trial_website' : wpdki_trial_website,
+                    };
+
+                    jQuery.post(ajaxurl, data, function(response){
+                        jQuery(".srx-wpdki-trial-form").css('opacity','1');
+                        jQuery("#srx_wpdki_tf_m").html(response);
+                    });
+
+                });
+            });
+        </script>
+    <?php 
+}
+
+add_action('wp_ajax_srx_wpdki_ft_req', 'srx_wpdki_ft_req_ws');
+function srx_wpdki_ft_req_ws(){
+
+    $wpdki_req_url = "https://wpdki.com/?wpdki_basic_trial_handler=true";
+    $data = array(
+        "wpdki_trial_f_name" => $_POST['wpdki_trial_f_name'],
+        "wpdki_trial_l_name" => $_POST['wpdki_trial_l_name'],
+        "wpdki_trial_email" => $_POST['wpdki_trial_email'],
+        "wpdki_trial_website" => $_POST['wpdki_trial_website']
+    );
+
+    $result = srx_wpdki_curl_function($data,$wpdki_req_url);
+    $result = json_decode($result,true);
+    echo $result['response_msg'];
+
+    wp_die();
+}

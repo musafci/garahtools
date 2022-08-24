@@ -23,10 +23,10 @@
 define( 'DB_NAME', 'garahtoo_datastore' );
 
 /** MySQL database username */
-define( 'DB_USER', 'garahtoo_admin' );
+define( 'DB_USER', 'root' );
 
 /** MySQL database password */
-define( 'DB_PASSWORD', '&}p(E#vc$vQD' );
+define( 'DB_PASSWORD', '' );
 
 /** MySQL hostname */
 define( 'DB_HOST', 'localhost' );
